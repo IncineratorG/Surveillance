@@ -2,8 +2,11 @@ package com.company.surveillance.controllers;
 
 import com.company.surveillance.SurveillanceEngine;
 import com.company.surveillance.commands.StartCameraCommand;
+import com.company.surveillance.data.Account;
+import com.company.surveillance.data.FirebaseResult;
 import com.company.surveillance.devices.post_processors.AdvancedMotionDetectingPostProcessor;
 import com.company.surveillance.devices.video_panels.ProcessedFrameVideoPanel;
+import com.company.surveillance.interfaces.data.PendingResult;
 import com.company.surveillance.interfaces.devices.FrameProvider;
 import com.company.surveillance.interfaces.devices.PostProcessor;
 import com.company.surveillance.managers.AccountManager;
@@ -43,6 +46,8 @@ public class TestPaneController_V7 implements Initializable {
     public void onButtonOneClicked() {
         String METHOD_NAME = ".onButtonOneClicked()";
         System.out.println(CLASS_NAME + METHOD_NAME);
+
+        FirebaseManager firebaseManager = FirebaseManager.getInstance();
     }
 
     public void onButtonTwoClicked() {
@@ -59,13 +64,15 @@ public class TestPaneController_V7 implements Initializable {
         String METHOD_NAME = ".onSetButtonClicked()";
         System.out.println(CLASS_NAME + METHOD_NAME);
 
-        FirebaseManager firebaseManager = FirebaseManager.getInstance();
         AccountManager accountManager = AccountManager.getInstance();
 
-        String computerName = accountManager.getMachineName();
-
-        System.out.println(CLASS_NAME + METHOD_NAME + "->COMPUTER_NAME: " + computerName);
-
-        firebaseManager.checkUser("a", "b", "c");
+        Account currentAccount = new Account("a", "b");
+        accountManager.checkAccount(currentAccount).addPendingResultListener(result -> {
+            if (result.getResultStatus() == PendingResult.Result.OK) {
+                System.out.println(CLASS_NAME + METHOD_NAME + "->ACCOUNT_EXISTED");
+                accountManager.setCurrentAccount(currentAccount);
+            } else
+                System.out.println(CLASS_NAME + METHOD_NAME + "->ACCOUNT_NOT_EXISTED");
+        });
     }
 }

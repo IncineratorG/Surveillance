@@ -159,8 +159,7 @@ public class Camera implements FrameProvider, FrameAcceptor, PostProcessor {
 
     @Override
     public void notifyListeners() {
-        for (NewFrameEventListener listener : newFrameEventListeners)
-            listener.onNewFrame(frame);
+        newFrameEventListeners.stream().forEach(listener -> listener.onNewFrame(frame));
     }
 
     @Override

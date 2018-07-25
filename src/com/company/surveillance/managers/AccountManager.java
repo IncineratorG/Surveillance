@@ -1,8 +1,13 @@
 package com.company.surveillance.managers;
 
+import com.company.surveillance.data.Account;
+import com.company.surveillance.data.FirebaseResult;
+import com.company.surveillance.interfaces.data.PendingResult;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Alexander on 25.07.2018.
@@ -10,13 +15,11 @@ import java.util.ArrayList;
 public class AccountManager {
     private static final String CLASS_NAME = "AccountManager";
     private volatile static AccountManager instance;
-    private String userName = "USER";
-    private String userPassword = "PASSWORD";
-    private String machineName = "TEST_SERVER";
+    private Account currentAccount;
 
 
     private AccountManager() {
-
+        currentAccount = new Account();
     }
 
     public static AccountManager getInstance() {
@@ -31,22 +34,19 @@ public class AccountManager {
     }
 
 
-    public String getUserName() {
-        return userName;
+    public Account getCurrentAccount() {
+        return currentAccount;
     }
 
-    public String getUserPassword() {
-        return userPassword;
+    public void setCurrentAccount(Account currentAccount) {
+        this.currentAccount = currentAccount;
     }
 
-    public String getMachineName() {
-        machineName = "UNKNOWN_PC";
-        try {
-            machineName = InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
+    public PendingResult checkAccount(Account account) {
+        List<String> firebaseFieldPathArgs = new ArrayList<>();
+        firebaseFieldPathArgs.add(account.getUserName());
+        firebaseFieldPathArgs.add(account.getPassword());
 
-        return machineName;
+        return FirebaseManager.getInstance().existField(firebaseFieldPathArgs);
     }
 }

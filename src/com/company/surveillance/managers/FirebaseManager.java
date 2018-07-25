@@ -1,6 +1,8 @@
 package com.company.surveillance.managers;
 
+import com.company.surveillance.data.FirebaseResult;
 import com.company.surveillance.helpers.SerializationHelper;
+import com.company.surveillance.interfaces.data.PendingResult;
 import com.company.surveillancedata.data_calsses.CommunicationMessage;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
@@ -91,29 +93,19 @@ public class FirebaseManager {
     }
 
 
-    public void checkUser(String userName, String password, String machineName) {
-        String METHOD_NAME = ".checkUser()";
+    public PendingResult existField(List<String> fieldPathArgs) {
+        String METHOD_NAME = ".existField()";
 
-        Firebase passwordField = getCommunicationField(Arrays.asList(userName, password));
-        passwordField.addListenerForSingleValueEvent(new ValueEventListener() {
+        FirebaseResult pendingResult = new FirebaseResult();
+
+        Firebase field = getField(fieldPathArgs);
+        field.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot == null || dataSnapshot.getValue() == null) {
-                    System.out.println(CLASS_NAME + METHOD_NAME + "->NO_DATA");
-                    return;
-                }
-
-                List<String> serversList = new ArrayList<String>();
-
-                for (DataSnapshot messageSnapshot: dataSnapshot.getChildren()) {
-                    String name = messageSnapshot.getKey();
-                    serversList.add(name);
-                }
-
-                serversList.stream()
-                        .forEach(name -> System.out.println(CLASS_NAME + METHOD_NAME + "->NAME: " + name));
-
-//                System.out.println(CLASS_NAME + METHOD_NAME + "->VALUE: " + dataSnapshot.getValue().toString());
+                if (dataSnapshot == null || dataSnapshot.getValue() == null || dataSnapshot.getValue().toString().isEmpty())
+                    pendingResult.setResultStatus(PendingResult.Result.BAD);
+                else
+                    pendingResult.setResultStatus(PendingResult.Result.OK);
             }
 
             @Override
@@ -121,11 +113,10 @@ public class FirebaseManager {
 
             }
         });
-    }
 
-    public void setUser(String userName, String password, String machineName) {
-
+        return pendingResult;
     }
+    
 //    public void setUser(String userName, String password, String machineName) {
 //        if (firebaseEventListener != null)
 //            getIncomingCommunicationField().removeEventListener(firebaseEventListener);
@@ -173,23 +164,21 @@ public class FirebaseManager {
 
     private Firebase getIncomingCommunicationField() {
         List<String> fields = Arrays.asList(USER_NAME, PASSWORD, SERVER_NAME, INCOMING_FIELD);
-        return getCommunicationField(fields);
+        return getField(fields);
     }
 
     private Firebase getOutgoingCommunicationField() {
         List<String> fields = Arrays.asList(USER_NAME, PASSWORD, SERVER_NAME, OUTGOING_FIELD);
-        return getCommunicationField(fields);
+        return getField(fields);
     }
 
-    private Firebase getCommunicationField(List<String> fields) {
-        String METHOD_NAME = ".getCommunicationField()";
+    private Firebase getField(List<String> fieldPathArgs) {
+        String METHOD_NAME = ".getField()";
 
         Firebase communicationField = new Firebase(FIREBASE_URL);
 
-        for (String field : fields)
-            communicationField = communicationField.child(field);
-
-//        System.out.println(CLASS_NAME + METHOD_NAME + "->FIELD: " + communicationField);
+        for (String fieldPath : fieldPathArgs)
+            communicationField = communicationField.child(fieldPath);
 
         return communicationField;
     }

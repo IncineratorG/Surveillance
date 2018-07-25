@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="SurveillanceDataLib">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/ExternalLibs/Custom/SurveillanceDataLib.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

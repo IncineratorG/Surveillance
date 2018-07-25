@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="240.0" minWidth="320.0" prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.company.surveillance.controllers.TestPaneController_V7">
+    <top>
+        <VBox BorderPane.alignment="CENTER">
+         <children>
+            <HBox>
+               <children>
+                  <Region HBox.hgrow="ALWAYS" />
+                  <Label fx:id="accountLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="25.0" text="Account not setted!">
+                     <HBox.margin>
+                        <Insets right="10.0" />
+                     </HBox.margin>
+                  </Label>
+                  <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onSetButtonClicked" prefWidth="70.0" style="-fx-background-radius: 0;" text="Set" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+               </VBox.margin>
+            </HBox>
+         </children></VBox>
+    </top>
+    <bottom>
+        <HBox BorderPane.alignment="CENTER">
+            <children>
+                <Label fx:id="label" text="Label" />
+            </children>
+            <padding>
+                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+            </padding>
+        </HBox>
+    </bottom>
+    <right>
+        <VBox alignment="CENTER" spacing="10.0" BorderPane.alignment="CENTER">
+            <children>
+                <Region VBox.vgrow="ALWAYS" />
+                <Button alignment="CENTER" mnemonicParsing="false" onAction="#onChooseButtonClicked" prefWidth="70.0" style="-fx-background-radius: 0;" text="Choose" />
+                <Button alignment="CENTER" mnemonicParsing="false" onAction="#onButtonOneClicked" prefWidth="70.0" style="-fx-background-radius: 0;" text="Button 1" />
+                <Button alignment="CENTER" mnemonicParsing="false" onAction="#onButtonTwoClicked" prefWidth="70.0" style="-fx-background-radius: 0;" text="Button 2" />
+            </children>
+            <BorderPane.margin>
+                <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+            </BorderPane.margin>
+        </VBox>
+    </right>
+    <center>
+        <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" pannable="true" prefHeight="200.0" prefWidth="200.0" vbarPolicy="NEVER" BorderPane.alignment="CENTER">
+            <content>
+                <Group fx:id="group">
+                    <children>
+                        <ImageView fx:id="imageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" />
+                    </children>
+                </Group>
+            </content>
+        </ScrollPane>
+    </center>
+</BorderPane>

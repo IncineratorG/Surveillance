@@ -1,25 +1,26 @@
 package com.company.surveillance.managers;
 
 import com.company.surveillance.data.Account;
-import com.company.surveillance.data.FirebaseResult;
+import com.company.surveillance.interfaces.data.AccountEventsProvider;
 import com.company.surveillance.interfaces.data.PendingResult;
+import com.company.surveillance.interfaces.event_listeners.AccountSetEventListener;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Alexander on 25.07.2018.
  */
-public class AccountManager {
+public class AccountManager implements AccountEventsProvider {
     private static final String CLASS_NAME = "AccountManager";
     private volatile static AccountManager instance;
     private Account currentAccount;
+    private List<AccountSetEventListener> listeners;
 
 
     private AccountManager() {
         currentAccount = new Account();
+        listeners = new ArrayList<>();
     }
 
     public static AccountManager getInstance() {
@@ -40,6 +41,7 @@ public class AccountManager {
 
     public void setCurrentAccount(Account currentAccount) {
         this.currentAccount = currentAccount;
+        notifyAccountSetListeners();
     }
 
     public PendingResult checkAccount(Account account) {
@@ -48,5 +50,21 @@ public class AccountManager {
         firebaseFieldPathArgs.add(account.getPassword());
 
         return FirebaseManager.getInstance().existField(firebaseFieldPathArgs);
+    }
+
+
+    @Override
+    public void addAccountSetEventListener(AccountSetEventListener listener) {
+        listeners.add(listener);
+    }
+
+    @Override
+    public void deleteAccountSetEventListener(AccountSetEventListener listener) {
+        listeners.remove(listener);
+    }
+
+    @Override
+    public void notifyAccountSetListeners() {
+        listeners.stream().forEach(listener -> listener.onAccountSet(currentAccount));
     }
 }

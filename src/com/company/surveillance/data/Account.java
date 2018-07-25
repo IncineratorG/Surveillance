@@ -1,5 +1,8 @@
 package com.company.surveillance.data;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 /**
  * Created by Alexander on 25.07.2018.
  */
@@ -17,6 +20,11 @@ public class Account {
     public Account(String userName, String password) {
         this.userName = userName;
         this.password = password;
+        try {
+            this.serverName = InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
     }
 
     public Account(Account other) {

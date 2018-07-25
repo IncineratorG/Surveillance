@@ -1,8 +1,10 @@
 package com.company.surveillance.managers;
 
+import com.company.surveillance.data.Account;
 import com.company.surveillance.data.FirebaseResult;
 import com.company.surveillance.helpers.SerializationHelper;
 import com.company.surveillance.interfaces.data.PendingResult;
+import com.company.surveillance.interfaces.event_listeners.AccountSetEventListener;
 import com.company.surveillancedata.data_calsses.CommunicationMessage;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
@@ -14,7 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 
-public class FirebaseManager {
+public class FirebaseManager implements AccountSetEventListener {
     private String CLASS_NAME = "FirebaseManager";
 
     private volatile static FirebaseManager instance;
@@ -33,6 +35,8 @@ public class FirebaseManager {
 
     private FirebaseManager() {
         firebaseDatabase = new Firebase(FIREBASE_URL);
+
+        AccountManager.getInstance().addAccountSetEventListener(this);
 
         firebaseEventListener = new ValueEventListener() {
             @Override
@@ -69,9 +73,7 @@ public class FirebaseManager {
             }
 
             @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
-            }
+            public void onCancelled(FirebaseError firebaseError) {}
         };
     }
 
@@ -109,43 +111,11 @@ public class FirebaseManager {
             }
 
             @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
-            }
+            public void onCancelled(FirebaseError firebaseError) {}
         });
 
         return pendingResult;
     }
-    
-//    public void setUser(String userName, String password, String machineName) {
-//        if (firebaseEventListener != null)
-//            getIncomingCommunicationField().removeEventListener(firebaseEventListener);
-//
-//        USER_NAME = userName;
-//        PASSWORD = password;
-//        SERVER_NAME = machineName;
-//
-//        getIncomingCommunicationField().addValueEventListener(firebaseEventListener);
-//    }
-//    public void setUser(String userName, String password) {
-//        if (firebaseEventListener != null)
-//            firebaseDatabase
-//                    .child(USER_NAME)
-//                    .child(PASSWORD)
-//                    .child(SERVER_NAME)
-//                    .child(INCOMING_FIELD)
-//                    .removeEventListener(firebaseEventListener);
-//
-//        USER_NAME = userName;
-//        PASSWORD = password;
-//
-//        firebaseDatabase
-//                .child(USER_NAME)
-//                .child(PASSWORD)
-//                .child(SERVER_NAME)
-//                .child(INCOMING_FIELD)
-//                .addValueEventListener(firebaseEventListener);
-//    }
 
     public void sendMessage(CommunicationMessage message) {
         String messageData = SerializationHelper.objectToString(message);
@@ -182,147 +152,44 @@ public class FirebaseManager {
 
         return communicationField;
     }
+
+
+    @Override
+    public void onAccountSet(Account account) {
+        
+    }
 }
 
 
-//public class FirebaseManager {
-//    private volatile static FirebaseManager instance;
-//    private static Firebase firebaseDatabase;
-//    private static final String FIREBASE_URL = "https://surveillance-136a9.firebaseio.com/";
-//    private static final String FIREBASE_FIELD = "TEST";
-//
-//
-//    private FirebaseManager() {
-//        firebaseDatabase = new Firebase(FIREBASE_URL);
-//        firebaseDatabase.child(FIREBASE_FIELD).addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                if (dataSnapshot == null || dataSnapshot.getValue() == null) {
-//                    System.out.println("NO_DATA");
-//                    return;
-//                }
-//
-//                CommunicationMessage message = (CommunicationMessage) SerializationHelper.objectFromString(dataSnapshot.getValue().toString());
-//                if (message == null) {
-//                    System.out.println("MESSAGE_IS_NULL");
-//                    return;
-//                }
-//
-////                switch (message.getCommandType()) {
-////                    case START:
-////                        System.out.println("COMMAND_START");
-////                        break;
-////
-////                    case STOP:
-////                        System.out.println("COMMAND_STOP");
-////                        break;
-////
-////                    default:
-////                        System.out.println("UNKNOWN_COMMAND");
-////                }
-//            }
-//
-//            @Override
-//            public void onCancelled(FirebaseError firebaseError) {
-//
-//            }
-//        });
-//    }
-//
-//    public static FirebaseManager getInstance() {
-//        if (instance == null) {
-//            synchronized (FirebaseManager.class) {
-//                if (instance == null)
-//                    instance = new FirebaseManager();
-//            }
-//        }
-//
-//        return instance;
-//    }
-//
-//    public void closeConnection() {
-//        if (firebaseDatabase != null)
-//            firebaseDatabase.goOffline();
-//    }
-//}
 
-//public class FirebaseManager {
-//    private volatile static FirebaseManager instance;
-//    private static Firebase firebaseDatabase;
-//    private static final String FIREBASE_URL = "https://surveillance-136a9.firebaseio.com/";
-//    private static final String FIREBASE_FIELD = "TEST";
+
+
+//    public void setUser(String userName, String password, String machineName) {
+//        if (firebaseEventListener != null)
+//            getIncomingCommunicationField().removeEventListener(firebaseEventListener);
 //
+//        USER_NAME = userName;
+//        PASSWORD = password;
+//        SERVER_NAME = machineName;
 //
-//    private FirebaseManager() {
-//        firebaseDatabase = new Firebase(FIREBASE_URL);
-//        firebaseDatabase.child(FIREBASE_FIELD).addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                if (dataSnapshot == null || dataSnapshot.getValue() == null) {
-//                    System.out.println("NO_DATA");
-//                    return;
-//                }
-//
-//                CommunicationMessage message = (CommunicationMessage) SerializationHelper.objectFromString(dataSnapshot.getValue().toString());
-//                if (message == null) {
-//                    System.out.println("MESSAGE_IS_NULL");
-//                    return;
-//                }
-//
-//                switch (message.getCommandType()) {
-//                    case START:
-//                        System.out.println("COMMAND_START");
-//                        break;
-//
-//                    case STOP:
-//                        System.out.println("COMMAND_STOP");
-//                        break;
-//
-//                    default:
-//                        System.out.println("UNKNOWN_COMMAND");
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(FirebaseError firebaseError) {
-//
-//            }
-//        });
+//        getIncomingCommunicationField().addValueEventListener(firebaseEventListener);
 //    }
+//    public void setUser(String userName, String password) {
+//        if (firebaseEventListener != null)
+//            firebaseDatabase
+//                    .child(USER_NAME)
+//                    .child(PASSWORD)
+//                    .child(SERVER_NAME)
+//                    .child(INCOMING_FIELD)
+//                    .removeEventListener(firebaseEventListener);
 //
-//    public static FirebaseManager getInstance() {
-//        if (instance == null) {
-//            synchronized (FirebaseManager.class) {
-//                if (instance == null)
-//                    instance = new FirebaseManager();
-//            }
-//        }
+//        USER_NAME = userName;
+//        PASSWORD = password;
 //
-//        return instance;
+//        firebaseDatabase
+//                .child(USER_NAME)
+//                .child(PASSWORD)
+//                .child(SERVER_NAME)
+//                .child(INCOMING_FIELD)
+//                .addValueEventListener(firebaseEventListener);
 //    }
-//
-//    public void closeConnection() {
-//        if (firebaseDatabase != null)
-//            firebaseDatabase.goOffline();
-//    }
-//
-//
-//    public void sendMessage() {
-//        firebaseDatabase.child(FIREBASE_FIELD).setValue("TEST_VALUE");
-//    }
-//
-//
-//    public void clearField() {
-//        System.out.println("CLEARING_FIELD");
-//
-//        firebaseDatabase.child(FIREBASE_FIELD).setValue(null);
-//    }
-//
-//
-//    public void testFunction() {
-//        long x = System.currentTimeMillis();
-//        long y = System.currentTimeMillis();
-//
-//        System.out.println("TEST_FUNCTION-> " + (x + y));
-//    }
-//}

@@ -58,6 +58,8 @@ public class TestPaneController_V7 implements Initializable {
     public void onChooseButtonClicked() {
         String METHOD_NAME = ".onChooseButtonClicked()";
         System.out.println(CLASS_NAME + METHOD_NAME);
+
+        FirebaseManager.getInstance().sendTestString("TEST_STRING");
     }
 
     public void onSetButtonClicked() {

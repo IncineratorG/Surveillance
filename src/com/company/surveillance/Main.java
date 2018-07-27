@@ -7,8 +7,15 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.opencv.core.DMatch;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfDMatch;
+import org.opencv.core.MatOfKeyPoint;
 import org.opencv.dnn.Dnn;
 import org.opencv.dnn.Net;
+import org.opencv.features2d.DescriptorExtractor;
+import org.opencv.features2d.DescriptorMatcher;
+import org.opencv.features2d.FeatureDetector;
 import org.opencv.features2d.Features2d;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
@@ -23,6 +30,7 @@ import java.util.stream.Collectors;
 
 
 public class Main extends Application {
+    private static final String CLASS_NAME = "Main";
     private static final String OPEN_CV_FOLDER = "C:\\Users\\Alexander\\IdeaProjects\\Surveillance\\ExternalLibs\\OpenCV\\x64\\opencv_java330.dll";
 
     public static void main(String[] args) {
@@ -44,6 +52,95 @@ public class Main extends Application {
     }
 
     // =====
+//    private void test_2() {
+//        String METHOD_NAME = ".test_2()";
+//        System.out.println(CLASS_NAME + METHOD_NAME);
+//
+//        FeatureDetector  fd = FeatureDetector.create(FeatureDetector.BRISK);
+//        final MatOfKeyPoint keyPointsLarge = new MatOfKeyPoint();
+//        final MatOfKeyPoint keyPointsSmall = new MatOfKeyPoint();
+//
+//        fd.detect(largeImage, keyPointsLarge);
+//        fd.detect(smallImage, keyPointsSmall);
+//
+//        System.out.println("keyPoints.size() : "+keyPointsLarge.size());
+//        System.out.println("keyPoints2.size() : "+keyPointsSmall.size());
+//
+//        Mat descriptorsLarge = new Mat();
+//        Mat descriptorsSmall = new Mat();
+//
+//        DescriptorExtractor extractor = DescriptorExtractor.create(DescriptorExtractor.BRISK);
+//        extractor.compute(largeImage, keyPointsLarge, descriptorsLarge);
+//        extractor.compute(smallImage, keyPointsSmall, descriptorsSmall);
+//
+//        System.out.println("descriptorsA.size() : "+descriptorsLarge.size());
+//        System.out.println("descriptorsB.size() : "+descriptorsSmall.size());
+//
+//        MatOfDMatch matches = new MatOfDMatch();
+//
+//        DescriptorMatcher matcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE_HAMMINGLUT);
+//        matcher.match(descriptorsLarge, descriptorsSmall, matches);
+//
+//        System.out.println("matches.size() : "+matches.size());
+//
+//        MatOfDMatch matchesFiltered = new MatOfDMatch();
+//
+//        List<DMatch> matchesList = matches.toList();
+//        List<DMatch> bestMatches= new ArrayList<DMatch>();
+//
+//        Double max_dist = 0.0;
+//        Double min_dist = 100.0;
+//
+//        for (int i = 0; i < matchesList.size(); i++)
+//        {
+//            Double dist = (double) matchesList.get(i).distance;
+//
+//            if (dist < min_dist && dist != 0)
+//            {
+//                min_dist = dist;
+//            }
+//
+//            if (dist > max_dist)
+//            {
+//                max_dist = dist;
+//            }
+//
+//        }
+//
+//        System.out.println("max_dist : "+max_dist);
+//        System.out.println("min_dist : "+min_dist);
+//
+//        double threshold = 3 * min_dist;
+//        double threshold2 = 2 * min_dist;
+//
+//        if (threshold2 >= max_dist)
+//        {
+//            threshold = min_dist * 1.1;
+//        }
+//        else if (threshold >= max_dist)
+//        {
+//            threshold = threshold2 * 1.4;
+//        }
+//
+//        System.out.println("Threshold : "+threshold);
+//
+//        for (int i = 0; i < matchesList.size(); i++)
+//        {
+//            Double dist = (double) matchesList.get(i).distance;
+//            System.out.println(String.format(i + " match distance best : %s", dist));
+//            if (dist < threshold)
+//            {
+//                bestMatches.add(matches.toList().get(i));
+//                System.out.println(String.format(i + " best match added : %s", dist));
+//            }
+//        }
+//
+//
+//        matchesFiltered.fromList(bestMatches);
+//
+//        System.out.println("matchesFiltered.size() : " + matchesFiltered.size());
+//    }
+
     private void test() {
         System.out.println("TEST");
 

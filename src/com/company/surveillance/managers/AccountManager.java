@@ -44,6 +44,10 @@ public class AccountManager implements AccountEventsProvider {
         notifyAccountSetListeners();
     }
 
+    public PendingResult createAccount(Account account) {
+        return null;
+    }
+
     public PendingResult checkAccount(Account account) {
         List<String> firebaseFieldPathArgs = new ArrayList<>();
         firebaseFieldPathArgs.add(account.getUserName());

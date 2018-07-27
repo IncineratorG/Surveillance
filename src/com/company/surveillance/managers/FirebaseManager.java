@@ -12,7 +12,6 @@ import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -23,17 +22,23 @@ public class FirebaseManager implements AccountSetEventListener {
     private static Firebase firebaseDatabase;
     private static final String FIREBASE_URL = "https://surveillance-136a9.firebaseio.com/";
 
-    private static String USER_NAME = "USER";
-    private static String PASSWORD = "PASSWORD";
-    private static String SERVER_NAME = "TEST_SERVER";
-    private static final String INCOMING_FIELD = "INCOMING_FIELD";
-    private static final String OUTGOING_FIELD = INCOMING_FIELD;
+    private List<String> incomingFieldArgs;
+    private List<String> outgoingFieldArgs;
+    private List<String> statusFieldArgs;
+    private final String INCOMING_FIELD = "INCOMING_FIELD";
+    private final String OUTGOING_FIELD = INCOMING_FIELD;
+    private final String STATUS_FIELD = "SERVER_STATUS";
+    private boolean accountSet = false;
 
     private ValueEventListener firebaseEventListener;
 
 
 
     private FirebaseManager() {
+        incomingFieldArgs = new ArrayList<>();
+        outgoingFieldArgs = new ArrayList<>();
+        statusFieldArgs = new ArrayList<>();
+
         firebaseDatabase = new Firebase(FIREBASE_URL);
 
         AccountManager.getInstance().addAccountSetEventListener(this);
@@ -100,7 +105,7 @@ public class FirebaseManager implements AccountSetEventListener {
 
         FirebaseResult pendingResult = new FirebaseResult();
 
-        Firebase field = getField(fieldPathArgs);
+        Firebase field = getFirebaseField(fieldPathArgs);
         field.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -119,31 +124,50 @@ public class FirebaseManager implements AccountSetEventListener {
 
     public void sendMessage(CommunicationMessage message) {
         String messageData = SerializationHelper.objectToString(message);
-        setOutgoingData(messageData);
+//        setOutgoingData(messageData);
+    }
+
+    public void sendTestString(String string) {
+        String METHOD_NAME = ".sendTestString()";
+
+        if (!accountSet) {
+            System.out.println(CLASS_NAME + METHOD_NAME + "->ACCOUNT_NOT_SET");
+            return;
+        }
+
+        getFirebaseField(outgoingFieldArgs).setValue(string);
+    }
+
+    public void sendStatus() {
+
     }
 
 
     private void setOutgoingData(String data) {
-        firebaseDatabase
-                .child(USER_NAME)
-                .child(PASSWORD)
-                .child(SERVER_NAME)
-                .child(OUTGOING_FIELD)
-                .setValue(data);
+//        firebaseDatabase
+//                .child(USER_NAME)
+//                .child(PASSWORD)
+//                .child(SERVER_NAME)
+//                .child(OUTGOING_FIELD)
+//                .setValue(data);
     }
 
     private Firebase getIncomingCommunicationField() {
-        List<String> fields = Arrays.asList(USER_NAME, PASSWORD, SERVER_NAME, INCOMING_FIELD);
-        return getField(fields);
+//        List<String> fields = Arrays.asList(USER_NAME, PASSWORD, SERVER_NAME, INCOMING_FIELD);
+//        return getFirebaseField(fields);
+
+        return null;
     }
 
     private Firebase getOutgoingCommunicationField() {
-        List<String> fields = Arrays.asList(USER_NAME, PASSWORD, SERVER_NAME, OUTGOING_FIELD);
-        return getField(fields);
+//        List<String> fields = Arrays.asList(USER_NAME, PASSWORD, SERVER_NAME, OUTGOING_FIELD);
+//        return getFirebaseField(fields);
+
+        return null;
     }
 
-    private Firebase getField(List<String> fieldPathArgs) {
-        String METHOD_NAME = ".getField()";
+    private Firebase getFirebaseField(List<String> fieldPathArgs) {
+        String METHOD_NAME = ".getFirebaseField()";
 
         Firebase communicationField = new Firebase(FIREBASE_URL);
 
@@ -156,7 +180,27 @@ public class FirebaseManager implements AccountSetEventListener {
 
     @Override
     public void onAccountSet(Account account) {
-        
+        String METHOD_NAME = ".onAccountSet()";
+        System.out.println(CLASS_NAME + METHOD_NAME);
+
+        if (account.isEmpty())
+            System.out.println(CLASS_NAME + METHOD_NAME + "->ACCOUNT_IS_EMPTY");
+
+        List<String> baseFieldsArgs = new ArrayList<>();
+        baseFieldsArgs.add(account.getUserName());
+        baseFieldsArgs.add(account.getPassword());
+        baseFieldsArgs.add(account.getServerName());
+
+        incomingFieldArgs = new ArrayList<>(baseFieldsArgs);
+        incomingFieldArgs.add(INCOMING_FIELD);
+
+        outgoingFieldArgs = new ArrayList<>(baseFieldsArgs);
+        outgoingFieldArgs.add(OUTGOING_FIELD);
+
+        statusFieldArgs = new ArrayList<>(baseFieldsArgs);
+        statusFieldArgs.add(STATUS_FIELD);
+
+        accountSet = true;
     }
 }
 

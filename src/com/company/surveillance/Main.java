@@ -4,10 +4,13 @@ import com.company.surveillance.helpers.OpenCVHelper;
 import com.company.surveillance.managers.FirebaseManager;
 import com.company.surveillancedata.data_calsses.ObjectId;
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import org.opencv.core.DMatch;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfDMatch;
@@ -23,7 +26,14 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.Objdetect;
 import org.opencv.video.Video;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 
@@ -47,7 +57,8 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         test();
-//        test_2();
+
+        createTrayIcon(primaryStage);
 
         Parent root = FXMLLoader.load(getClass().getResource("views/test_pane.fxml"));
 
@@ -315,5 +326,110 @@ public class Main extends Application {
     public void stop() throws Exception {
         FirebaseManager.getInstance().closeConnection();
         super.stop();
+    }
+
+
+
+
+
+
+
+    
+
+    private static boolean firstTime;
+    private static TrayIcon trayIcon;
+
+    public static void createTrayIcon(final Stage stage) {
+        if (SystemTray.isSupported()) {
+            // get the SystemTray instance
+            SystemTray tray = SystemTray.getSystemTray();
+            // load an image
+            java.awt.Image image = null;
+
+            try {
+                image = ImageIO.read(new File("C:\\Empty files\\im.jpg"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+//            try {
+//                URL url = new URL("C:\\Empty files\\im.jpg");
+//                image = ImageIO.read(url);
+//            } catch (IOException ex) {
+//                System.out.println(ex);
+//            }
+
+
+            stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+                @Override
+                public void handle(WindowEvent t) {
+                    hide(stage);
+                }
+            });
+            // create a action listener to listen for default action executed on the tray icon
+            final ActionListener closeListener = new ActionListener() {
+                @Override
+                public void actionPerformed(java.awt.event.ActionEvent e) {
+                    System.exit(0);
+                }
+            };
+
+            ActionListener showListener = new ActionListener() {
+                @Override
+                public void actionPerformed(java.awt.event.ActionEvent e) {
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            stage.show();
+                        }
+                    });
+                }
+            };
+            // create a popup menu
+            PopupMenu popup = new PopupMenu();
+
+            MenuItem showItem = new MenuItem("Show");
+            showItem.addActionListener(showListener);
+            popup.add(showItem);
+
+            MenuItem closeItem = new MenuItem("Close");
+            closeItem.addActionListener(closeListener);
+            popup.add(closeItem);
+            /// ... add other items
+            // construct a TrayIcon
+            trayIcon = new TrayIcon(image, "Title", popup);
+            // set the TrayIcon properties
+            trayIcon.addActionListener(showListener);
+            // ...
+            // add the tray image
+            try {
+                tray.add(trayIcon);
+            } catch (AWTException e) {
+                System.err.println(e);
+            }
+            // ...
+        }
+    }
+
+    public static void showProgramIsMinimizedMsg() {
+        if (firstTime) {
+            trayIcon.displayMessage("Some message.",
+                    "Some other message.",
+                    TrayIcon.MessageType.INFO);
+            firstTime = false;
+        }
+    }
+
+    private static void hide(final Stage stage) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                if (SystemTray.isSupported()) {
+                    stage.hide();
+                    showProgramIsMinimizedMsg();
+                } else {
+                    System.exit(0);
+                }
+            }
+        });
     }
 }

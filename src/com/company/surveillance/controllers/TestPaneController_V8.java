@@ -56,6 +56,8 @@ public class TestPaneController_V8 implements Initializable {
     public void onButtonOneClicked() {
         String METHOD_NAME = ".onButtonOneClicked()";
         System.out.println(CLASS_NAME + METHOD_NAME);
+
+
     }
 
     public void onButtonTwoClicked() {
